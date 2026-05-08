@@ -3,12 +3,15 @@ import {
   registerUser,
   signInUser,
   REFRESH_TOKEN_TTL,
+  refreshAccessToken,
 } from "../services/auth.service.js";
+
+const isProduction = process.env.NODE_ENV === "production";
 
 const refreshTokenCookieOptions = {
   httpOnly: true,
-  secure: true,
-  sameSite: "none",
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
 };
 
 export const signUp = async (req, res, next) => {
@@ -53,6 +56,17 @@ export const signOut = async (req, res, next) => {
 
     res.clearCookie("refreshToken", refreshTokenCookieOptions);
     return res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+};
+
+//create new AccessToken from RefreshToken
+export const refreshToken = async (req, res, next) => {
+  try {
+    const accessToken = await refreshAccessToken(req.cookies);
+
+    return res.status(200).json({ accessToken });
   } catch (error) {
     next(error);
   }

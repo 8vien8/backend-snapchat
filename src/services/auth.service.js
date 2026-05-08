@@ -72,3 +72,24 @@ export const signInUser = async (data) => {
 
   return { user, accessToken, refreshToken };
 };
+
+export const refreshAccessToken = async (cookies) => {
+  // get refreshToken from cookie
+  const token = cookies?.refreshToken;
+  if (!token) throw new ApiError(401, "Token is not exist");
+
+  // compare refresh token ( cookie ~ database)
+  const session = await Session.findOne({ refreshToken: token });
+  if (!session) throw new ApiError(403, "Token is invalid or expired");
+
+  // check if refreshToken is expired
+  const isSessionExpired = session.expiresAt < new Date();
+  if (isSessionExpired) throw new ApiError(403, "Token is expired");
+
+  // create new accessToken
+  const accessToken = jwt.sign({ userId: session.userId }, JWT_KEY, {
+    expiresIn: ACCESS_TOKEN_TTL,
+  });
+
+  return accessToken;
+};
