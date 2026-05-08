@@ -34,6 +34,7 @@ export const signIn = async (req, res, next) => {
     });
 
     return res.status(200).json({
+      userName: user.displayName,
       message: `User ${user.displayName} logged in`,
       accesstoken,
     });

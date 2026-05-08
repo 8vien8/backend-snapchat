@@ -48,9 +48,9 @@ const createSession = ({ userId, refreshToken }) => {
 };
 
 export const signInUser = async (data) => {
-  const { username, password } = data;
+  const { email, password } = data;
 
-  const user = await User.findOne({ username }).select("+password");
+  const user = await User.findOne({ email }).select("+password");
 
   if (!user) throw new ApiError(401, "Invalid credentials");
 
