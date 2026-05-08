@@ -52,13 +52,14 @@ export const signInUser = async (data) => {
 
   const user = await User.findOne({ email }).select("+password");
 
-  if (!user) throw new ApiError(401, "Invalid credentials");
+  if (!user) throw new ApiError(401, "Email or password is not correct");
 
   const isCorrectPassword = await bcrypt.compare(password, user.password);
 
-  if (!isCorrectPassword) throw new ApiError(401, "Invalid credentials");
+  if (!isCorrectPassword)
+    throw new ApiError(401, "Email or password is not correct");
 
-  const accesstoken = jwt.sign({ userId: user.id }, JWT_KEY, {
+  const accessToken = jwt.sign({ userId: user.id }, JWT_KEY, {
     expiresIn: ACCESS_TOKEN_TTL,
   });
 
@@ -69,5 +70,5 @@ export const signInUser = async (data) => {
     refreshToken,
   });
 
-  return { user, accesstoken, refreshToken };
+  return { user, accessToken, refreshToken };
 };
