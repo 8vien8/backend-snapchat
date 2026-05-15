@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { connectDB } from "./libs/db.js";
 import authRoute from "./routes/auth.route.js";
 import userRoute from "./routes/user.route.js";
+import friendRoute from "./routes/friend.route.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import cookieParser from "cookie-parser";
 import { protectedRoute } from "./middlewares/auth.middleware.js";
@@ -23,7 +24,9 @@ app.use(cors({ origin: CLIENT_URL, credentials: true }));
 app.use("/api/auth", authRoute);
 
 // private route
-app.use("/api/auth", protectedRoute, userRoute);
+app.use(protectedRoute);
+app.use("/api/user", userRoute);
+app.use("/api/friends", friendRoute);
 
 // error handler
 app.use(errorHandler);

@@ -26,7 +26,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    avatarUrl: String,
+    avatarUrl: {
+      type: String,
+      default:
+        "https://res.cloudinary.com/di8bzykms/image/upload/v1778818424/snap_logo.png",
+    },
     bio: {
       type: String,
       maxlength: 500,
