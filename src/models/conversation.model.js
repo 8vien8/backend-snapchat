@@ -7,7 +7,7 @@ const particapantSchema = mongoose.Schema(
       ref: "User",
       required: true,
     },
-    joinAt: {
+    joinedAt: {
       type: Date,
       default: Date.now,
     },
@@ -62,7 +62,7 @@ const conversationShema = new mongoose.Schema(
       enum: ["direct", "group"], // limitation: 1-1 chat or group chat
       required: true,
     },
-    participant: {
+    participants: {
       type: [particapantSchema],
       required: true,
     },
@@ -80,7 +80,11 @@ const conversationShema = new mongoose.Schema(
       type: [lastMessageSchema],
       default: null,
     },
-    unreadCount: {
+    lastMessageAt: {
+      type: Date,
+      default: null,
+    },
+    unreadCounts: {
       type: Map,
       of: Number,
       default: {}, // empty Map

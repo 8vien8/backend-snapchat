@@ -4,6 +4,7 @@ import { connectDB } from "./libs/db.js";
 import authRoute from "./routes/auth.route.js";
 import userRoute from "./routes/user.route.js";
 import friendRoute from "./routes/friend.route.js";
+import messageRoute from "./routes/message.route.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import cookieParser from "cookie-parser";
 import { protectedRoute } from "./middlewares/auth.middleware.js";
@@ -27,6 +28,7 @@ app.use("/api/auth", authRoute);
 app.use(protectedRoute);
 app.use("/api/user", userRoute);
 app.use("/api/friends", friendRoute);
+app.use("/api/message", messageRoute);
 
 // error handler
 app.use(errorHandler);

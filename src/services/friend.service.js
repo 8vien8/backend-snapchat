@@ -8,7 +8,7 @@ import ApiError from "../utils/ApiError.js";
  * smaller id => userA
  * larger id => userB
  */
-const normalizeFriendPair = (id1, id2) => {
+export const normalizeFriendPair = (id1, id2) => {
   return id1.toString() < id2.toString() ? [id1, id2] : [id2, id1];
 };
 
