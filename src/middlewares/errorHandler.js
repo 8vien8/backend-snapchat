@@ -1,5 +1,8 @@
 export const errorHandler = (err, req, res, next) => {
-  return res.status(err.statusCode || 500).json({
-    message: err.message || "Internal Server Error",
-  });
+  const response =
+    typeof err.toResponse === "function"
+      ? err.toResponse()
+      : { message: err.message || "Internal Server Error" };
+
+  return res.status(err.statusCode || 500).json(response);
 };

@@ -9,6 +9,10 @@ import ApiError from "../utils/ApiError.js";
  * larger id => userB
  */
 export const normalizeFriendPair = (id1, id2) => {
+  if (!id1 || !id2) {
+    throw new ApiError(400, "Missing user id");
+  }
+
   return id1.toString() < id2.toString() ? [id1, id2] : [id2, id1];
 };
 

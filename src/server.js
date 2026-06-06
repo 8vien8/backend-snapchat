@@ -1,14 +1,18 @@
 import express from "express";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+
 import { connectDB } from "./libs/db.js";
+
+import { errorHandler } from "./middlewares/errorHandler.js";
+import { protectedRoute } from "./middlewares/auth.middleware.js";
+
 import authRoute from "./routes/auth.route.js";
 import userRoute from "./routes/user.route.js";
 import friendRoute from "./routes/friend.route.js";
 import messageRoute from "./routes/message.route.js";
-import { errorHandler } from "./middlewares/errorHandler.js";
-import cookieParser from "cookie-parser";
-import { protectedRoute } from "./middlewares/auth.middleware.js";
-import cors from "cors";
+import conversationRoute from "./routes/conversation.route.js";
 
 dotenv.config();
 
@@ -29,6 +33,7 @@ app.use(protectedRoute);
 app.use("/api/user", userRoute);
 app.use("/api/friends", friendRoute);
 app.use("/api/message", messageRoute);
+app.use("/api/conversations", conversationRoute);
 
 // error handler
 app.use(errorHandler);

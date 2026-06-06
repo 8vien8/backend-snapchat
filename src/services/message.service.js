@@ -37,4 +37,19 @@ export const sendDirectMessages = async (data) => {
   return message;
 };
 
-export const sendGroupMessages = async () => {};
+export const sendGroupMessages = async (data) => {
+  const { conversationId, content, senderId, conversation } = data;
+
+  if (!content) throw new ApiError(400, "Missing content");
+
+  const message = await Message.create({
+    conversationId,
+    senderId,
+    content,
+  });
+
+  udpateConversationAfterUpdate(conversation, message, senderId);
+  await conversation.save();
+
+  return { message };
+};
