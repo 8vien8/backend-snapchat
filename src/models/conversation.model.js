@@ -67,7 +67,7 @@ const conversationShema = new mongoose.Schema(
       required: true,
     },
     group: {
-      type: [groupSchema],
+      type: groupSchema,
     },
     seenBy: [
       // Array
@@ -77,7 +77,7 @@ const conversationShema = new mongoose.Schema(
       },
     ],
     lastMessage: {
-      type: [lastMessageSchema],
+      type: lastMessageSchema,
       default: null,
     },
     lastMessageAt: {
