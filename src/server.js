@@ -14,9 +14,11 @@ import friendRoute from "./routes/friend.route.js";
 import messageRoute from "./routes/message.route.js";
 import conversationRoute from "./routes/conversation.route.js";
 
+import { app, server } from "./socket/index.js";
+
 dotenv.config();
 
-const app = express();
+// const app = express();
 const PORT = process.env.PORT || 8080;
 const CLIENT_URL = process.env.CLIENT_URL;
 
@@ -43,7 +45,7 @@ connectDB().then(() => {
     res.send("Hello World!");
   });
 
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`Server is running on: http://localhost:${PORT}`);
   });
 });

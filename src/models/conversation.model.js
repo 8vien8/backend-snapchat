@@ -96,7 +96,7 @@ const conversationShema = new mongoose.Schema(
 );
 
 conversationShema.index({
-  "participant.userId": 1,
+  "participants.userId": 1,
   "lastMessage.createdAt": 1,
 });
 

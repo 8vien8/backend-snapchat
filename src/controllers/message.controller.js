@@ -6,7 +6,6 @@ import {
 export const sendDirectMessage = async (req, res, next) => {
   try {
     const senderId = req.user._id;
-    console.log(senderId);
     const message = await sendDirectMessages({
       ...req.body,
       senderId: senderId,
