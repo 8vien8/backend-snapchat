@@ -1,7 +1,11 @@
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
+import { io } from "../socket/index.js";
 import ApiError from "../utils/ApiError.js";
-import { udpateConversationAfterUpdate } from "../utils/message.helper.js";
+import {
+  emitNewMessage,
+  udpateConversationAfterUpdate,
+} from "../utils/message.helper.js";
 
 export const sendDirectMessages = async (data) => {
   const { recipientId, content, conversationId, senderId } = data;
@@ -34,6 +38,8 @@ export const sendDirectMessages = async (data) => {
 
   await conversation.save();
 
+  emitNewMessage(io, conversation, message);
+
   return message;
 };
 
@@ -49,7 +55,10 @@ export const sendGroupMessages = async (data) => {
   });
 
   udpateConversationAfterUpdate(conversation, message, senderId);
+
   await conversation.save();
+
+  emitNewMessage(io, conversation, message);
 
   return { message };
 };

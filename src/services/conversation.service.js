@@ -1,6 +1,7 @@
 import ApiError from "../utils/ApiError.js";
 import Conversation from "../models/conversation.model.js";
 import Messsage from "../models/message.model.js";
+import { io } from "../socket/index.js";
 
 export const creatConversations = async (data) => {
   const { type, name, memberIds, userId } = data;
@@ -146,4 +147,71 @@ export const getMessages = async (data) => {
     nextCursor,
     messages,
   };
+};
+
+export const markAsSeenMessages = async (data) => {
+  const { conversationId, userId } = data;
+
+  const conversation = await Conversation.findById(conversationId).lean();
+  if (!conversation) throw new ApiError(404, "Conversation not found");
+
+  const lastMes = conversation.lastMessage;
+
+  const updated = await Conversation.findByIdAndUpdate(
+    conversationId,
+    {
+      $addToSet: { seenBy: userId },
+      $set: { [`unreadCounts.${userId}`]: 0 },
+    },
+    { new: true },
+  )
+    .populate({
+      path: "participants.userId",
+      select: "displayName avatarUrl",
+    })
+    .populate({
+      path: "lastMessage.senderId",
+      select: "displayName avatarUrl",
+    })
+    .populate({
+      path: "seenBy",
+      select: "displayName avatarUrl",
+    });
+
+  if (!updated) throw new ApiError(404, "Conversation not found");
+
+  const participants = (updated.participants || []).map((p) => ({
+    _id: p.userId?._id,
+    displayName: p.userId?.displayName,
+    avatarUrl: p.userId?.avatarUrl ?? null,
+    joinedAt: p.joinedAt,
+  }));
+
+  const formattedConvo = {
+    ...updated.toObject(),
+    participants,
+  };
+
+  io.to(conversationId).emit("read-message", {
+    conversation: formattedConvo,
+    lastMessage: formattedConvo.lastMessage
+      ? {
+          _id: formattedConvo.lastMessage._id,
+          content: formattedConvo.lastMessage.content,
+          createdAt: formattedConvo.lastMessage.createdAt,
+          sender: formattedConvo.lastMessage.senderId
+            ? {
+                _id: formattedConvo.lastMessage.senderId._id,
+                displayName: formattedConvo.lastMessage.senderId.displayName || "",
+                avatarUrl: formattedConvo.lastMessage.senderId.avatarUrl || null,
+              }
+            : null,
+        }
+      : null,
+  });
+
+  const seenBy = formattedConvo.seenBy || [];
+  const myUnreadCount = formattedConvo.unreadCounts?.[userId] || 0;
+
+  return { lastMes, seenBy, myUnreadCount };
 };
